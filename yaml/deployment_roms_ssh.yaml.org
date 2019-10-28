@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: roms-ssh-deployment
+  namespace: roms-k8s
+  labels:
+    app: roms-ssh
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: roms-ssh
+  template:
+    metadata:
+      labels:
+        app: roms-ssh
+    spec:
+      containers:
+      - name: roms-ssh
+        image: corbinu/ssh-server
+        volumeMounts:
+        - mountPath: /NWP
+          name: pvroms
+        command: ["/bin/sh", "-c"]
+        args:
+          - echo starting;
+            /usr/sbin/sshd;
+            sleep 3600;
+            echo done;
+        ports:
+        - containerPort: 22
+        lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "cat /NWP/id_rsa.pub >> /root/.ssh/authorized_keys"]  
+      volumes:
+      - name: pvroms
+        persistentVolumeClaim:
+         claimName: romsclaim

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: roms
+  namespace: roms-k8s
+spec:
+  containers:
+  - name: roms-k8s
+    image: next7885/ubuntu_gfortran_mpi_netcdf_roms:gfortran
+    volumeMounts:
+    - mountPath: /NWP
+      name: pvroms
+    command:
+       - "sleep"
+       - "3600"
+  volumes:
+  - name: pvroms
+    persistentVolumeClaim:
+      claimName: romsclaim

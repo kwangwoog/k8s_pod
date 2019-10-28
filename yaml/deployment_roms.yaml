@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: roms-deployment
+  namespace: roms-k8s
+  labels:
+    app: roms
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: roms
+  template:
+    metadata:
+      labels:
+        app: roms
+    spec:
+      containers:
+      - name: roms
+        image: next7885/ubuntu_gfortran_mpi_netcdf_roms:gfortran
+        volumeMounts:
+        - mountPath: /NWP
+          name: pvroms
+        command:
+         - "sleep"
+         - "3600"
+        port: 22
+      volumes:
+      - name: pvroms
+        persistentVolumeClaim:
+         claimName: romsclaim
